@@ -2,8 +2,6 @@
 
 A comprehensive mobile application for New College students at the University of Toronto to access college services, information, and resources.
 
-![New College UofT App](https://via.placeholder.com/800x400?text=New+College+UofT+App)
-
 ## 📱 About
 
 This Flutter application serves as a one-stop portal for New College students to access:
@@ -73,27 +71,6 @@ The application follows a modular architecture with clear separation of concerns
 │  └───────────┘  └─────────────┘  └─────────────┘  └────────┘  │
 │                                                               │
 └───────────────────────────────────────────────────────────────┘
-```
-
-### Directory Structure
-
-```
-lib/
-├── constants/              # App-wide constants
-│   ├── app_colors.dart     # Color definitions
-│   └── app_theme.dart      # Theme configuration
-├── models/                 # Data models
-├── screens/                # UI screens
-│   ├── auth/               # Authentication screens
-│   │   ├── login_screen.dart
-│   │   └── signup_screen.dart
-│   ├── home/               # Home and main navigation
-│   │   └── home_screen.dart
-│   └── welcome_screen.dart # Entry point screen
-├── services/               # Business logic and API services
-├── utils/                  # Utility functions and helpers
-├── widgets/                # Reusable UI components
-└── main.dart               # App entry point
 ```
 
 ### Design Patterns
