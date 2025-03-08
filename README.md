@@ -1,4 +1,6 @@
-# New College UofT Mobile App
+# CollegeHelp
+
+### New College App
 
 A comprehensive mobile application for New College students at the University of Toronto to access college services, information, and resources.
 
