@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'constants/app_theme.dart';
 import 'screens/welcome_screen.dart';
+import 'screens/home/profile_screen.dart';
+import 'screens/home/notifications_screen.dart';
 
 void main() {
   runApp(const NewCollegeApp());
@@ -499,8 +501,18 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('New College Portal'),
         actions: [
-          IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.account_circle), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.notifications), onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+            );
+          }),
+          IconButton(icon: const Icon(Icons.account_circle), onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          }),
         ],
       ),
       body: const Center(
