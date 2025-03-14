@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'constants/app_theme.dart';
-import 'screens/welcome_screen.dart';
-import 'screens/home/profile_screen.dart';
-import 'screens/home/notifications_screen.dart';
+import 'screens/home/home_screen.dart';
 
 void main() {
   runApp(const NewCollegeApp());
@@ -97,6 +95,12 @@ class WelcomeScreen extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   // Navigate to home screen as guest
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeScreen(isGuest: true),
+                    ),
+                  );
                 },
                 child: const Text(
                   'Continue as Guest',
@@ -137,7 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
       // For now, just navigate to a placeholder home screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(isGuest: false),
+        ),
       );
     }
   }
@@ -295,7 +301,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // For now, just navigate to a placeholder home screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(isGuest: false),
+        ),
       );
     }
   }
@@ -486,61 +494,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-// Placeholder Home Screen
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('New College Portal'),
-        actions: [
-          IconButton(icon: const Icon(Icons.notifications), onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const NotificationsScreen()),
-            );
-          }),
-          IconButton(icon: const Icon(Icons.account_circle), onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProfileScreen()),
-            );
-          }),
-        ],
-      ),
-      body: const Center(
-        child: Text(
-          'Welcome to New College Portal!\n(Home Screen is coming next)',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 0,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant_menu),
-            label: 'Dining',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.apartment),
-            label: 'Residence',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: 'Academics'),
-        ],
-        onTap: (index) {
-          // Handle navigation
-        },
       ),
     );
   }

@@ -70,10 +70,10 @@ class AppTheme {
 
       // Checkbox theme
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith<Color>((
-          Set<MaterialState> states,
+        fillColor: WidgetStateProperty.resolveWith<Color>((
+          Set<WidgetState> states,
         ) {
-          if (states.contains(MaterialState.selected)) {
+          if (states.contains(WidgetState.selected)) {
             return AppColors.primaryBlue;
           }
           return Colors.transparent;

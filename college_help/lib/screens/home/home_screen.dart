@@ -33,12 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // Show notifications
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-
-            },
-          ),
+          IconButton(icon: const Icon(Icons.account_circle), onPressed: () {}),
         ],
       ),
       body: _screens[_currentIndex],
@@ -75,97 +70,185 @@ class _HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Welcome section
-          const Text(
-            'Welcome to New College',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primaryBlue,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight:
+              MediaQuery.of(context).size.height -
+              kToolbarHeight -
+              kBottomNavigationBarHeight -
+              MediaQuery.of(context).padding.top -
+              MediaQuery.of(context).padding.bottom,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Welcome section
+            const Text(
+              'Welcome to New College',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryBlue,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Your one-stop portal for all college services',
-            style: TextStyle(fontSize: 16, color: AppColors.textLight),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 8),
+            Text(
+              'Your one-stop portal for all college services',
+              style: TextStyle(fontSize: 16, color: AppColors.textLight),
+            ),
+            const SizedBox(height: 24),
 
-          // Announcements section
-          const _SectionHeader(title: 'Announcements', icon: Icons.campaign),
-          const SizedBox(height: 8),
-          _AnnouncementCard(
-            title: 'Fall Registration Open',
-            date: 'July 15, 2023',
-            description:
-                'Registration for Fall 2023 courses is now open. Please check your enrollment time on ACORN.',
-            onTap: () {},
-          ),
-          const SizedBox(height: 12),
-          _AnnouncementCard(
-            title: 'Residence Move-In Weekend',
-            date: 'August 30, 2023',
-            description:
-                'Residence move-in will begin on August 30. Check your email for specific time slots.',
-            onTap: () {},
-          ),
-          const SizedBox(height: 24),
+            // Featured Section
+            _FeaturedBanner(
+              title: 'New College Orientation Week',
+              description:
+                  'Join us for a week of activities to welcome new students',
+              imageUrl: 'assets/images/orientation.jpg',
+              onTap: () {},
+            ),
+            const SizedBox(height: 24),
 
-          // Quick Links section
-          const _SectionHeader(title: 'Quick Links', icon: Icons.link),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            children: [
-              _QuickLinkButton(
-                icon: Icons.calendar_today,
-                label: 'Academic Calendar',
-                onTap: () {},
-              ),
-              _QuickLinkButton(
-                icon: Icons.book,
-                label: 'Library',
-                onTap: () {},
-              ),
-              _QuickLinkButton(
-                icon: Icons.map,
-                label: 'Campus Map',
-                onTap: () {},
-              ),
-              _QuickLinkButton(
-                icon: Icons.email,
-                label: 'Contact Staff',
-                onTap: () {},
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
+            // Announcements section
+            const _SectionHeader(title: 'Announcements', icon: Icons.campaign),
+            const SizedBox(height: 8),
+            _AnnouncementCard(
+              title: 'Fall Registration Open',
+              date: 'July 15, 2023',
+              description:
+                  'Registration for Fall 2023 courses is now open. Please check your enrollment time on ACORN.',
+              priority: 'High',
+              onTap: () {},
+            ),
+            const SizedBox(height: 12),
+            _AnnouncementCard(
+              title: 'Residence Move-In Weekend',
+              date: 'August 30, 2023',
+              description:
+                  'Residence move-in will begin on August 30. Check your email for specific time slots.',
+              priority: 'Medium',
+              onTap: () {},
+            ),
+            const SizedBox(height: 12),
+            _AnnouncementCard(
+              title: 'Winter Registration Deadline Extended',
+              date: 'November 15, 2023',
+              description:
+                  'The deadline for Winter 2024 course registration has been extended to December 1, 2023.',
+              priority: 'Low',
+              onTap: () {},
+            ),
+            const SizedBox(height: 24),
 
-          // Upcoming Events
-          const _SectionHeader(
-            title: 'Upcoming Events',
-            icon: Icons.event_note,
-          ),
-          const SizedBox(height: 12),
-          _EventCard(
-            title: 'Welcome Week Orientation',
-            date: 'September 5, 2023',
-            location: 'New College Quad',
-            onTap: () {},
-          ),
-          const SizedBox(height: 12),
-          _EventCard(
-            title: 'Student Club Fair',
-            date: 'September 10, 2023',
-            location: 'Wilson Hall',
-            onTap: () {},
-          ),
-        ],
+            // Quick Links section
+            const _SectionHeader(title: 'Quick Links', icon: Icons.link),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                _QuickLinkButton(
+                  icon: Icons.calendar_today,
+                  label: 'Academic Calendar',
+                  onTap: () {},
+                ),
+                _QuickLinkButton(
+                  icon: Icons.book,
+                  label: 'Library',
+                  onTap: () {},
+                ),
+                _QuickLinkButton(
+                  icon: Icons.map,
+                  label: 'Campus Map',
+                  onTap: () {},
+                ),
+                _QuickLinkButton(
+                  icon: Icons.email,
+                  label: 'Contact Staff',
+                  onTap: () {},
+                ),
+                _QuickLinkButton(
+                  icon: Icons.computer,
+                  label: 'Quercus',
+                  onTap: () {},
+                ),
+                _QuickLinkButton(
+                  icon: Icons.account_balance_wallet,
+                  label: 'ACORN',
+                  onTap: () {},
+                ),
+                _QuickLinkButton(
+                  icon: Icons.health_and_safety,
+                  label: 'Health Services',
+                  onTap: () {},
+                ),
+                _QuickLinkButton(
+                  icon: Icons.sports,
+                  label: 'Athletics',
+                  onTap: () {},
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // College Resources
+            const _SectionHeader(
+              title: 'College Resources',
+              icon: Icons.school,
+            ),
+            const SizedBox(height: 12),
+            _ResourceCard(
+              title: 'New College Writing Centre',
+              description:
+                  'Book appointments for writing support and essay feedback',
+              icon: Icons.edit_document,
+              onTap: () {},
+            ),
+            const SizedBox(height: 12),
+            _ResourceCard(
+              title: 'D.G. Ivey Library',
+              description: 'Access study spaces, books, and resources',
+              icon: Icons.local_library,
+              onTap: () {},
+            ),
+            const SizedBox(height: 12),
+            _ResourceCard(
+              title: 'Academic Advising',
+              description: 'Schedule meetings with college academic advisors',
+              icon: Icons.people,
+              onTap: () {},
+            ),
+            const SizedBox(height: 24),
+
+            // Upcoming Events
+            const _SectionHeader(
+              title: 'Upcoming Events',
+              icon: Icons.event_note,
+            ),
+            const SizedBox(height: 12),
+            _EventCard(
+              title: 'Welcome Week Orientation',
+              date: 'September 5, 2023',
+              location: 'New College Quad',
+              onTap: () {},
+            ),
+            const SizedBox(height: 12),
+            _EventCard(
+              title: 'Student Club Fair',
+              date: 'September 10, 2023',
+              location: 'Wilson Hall',
+              onTap: () {},
+            ),
+            const SizedBox(height: 12),
+            _EventCard(
+              title: 'New College Student Council Meeting',
+              date: 'September 15, 2023',
+              location: 'Wilson Hall Room 1017',
+              onTap: () {},
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -244,17 +327,31 @@ class _AnnouncementCard extends StatelessWidget {
   final String title;
   final String date;
   final String description;
+  final String priority;
   final VoidCallback onTap;
 
   const _AnnouncementCard({
     required this.title,
     required this.date,
     required this.description,
+    this.priority = 'Medium',
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    Color priorityColor;
+    switch (priority) {
+      case 'High':
+        priorityColor = Colors.red.shade700;
+        break;
+      case 'Medium':
+        priorityColor = Colors.orange;
+        break;
+      default:
+        priorityColor = Colors.green;
+    }
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -278,9 +375,20 @@ class _AnnouncementCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Text(
-                    date,
-                    style: TextStyle(fontSize: 12, color: AppColors.textLight),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: priorityColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: priorityColor.withOpacity(0.3)),
+                    ),
+                    child: Text(
+                      date,
+                      style: TextStyle(fontSize: 12, color: priorityColor),
+                    ),
                   ),
                 ],
               ),
@@ -290,6 +398,34 @@ class _AnnouncementCard extends StatelessWidget {
                 style: TextStyle(fontSize: 14, color: AppColors.textDark),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Priority: ',
+                    style: TextStyle(fontSize: 12, color: AppColors.textLight),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: priorityColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      priority,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: priorityColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -406,6 +542,166 @@ class _QuickLinkButton extends StatelessWidget {
               style: TextStyle(fontSize: 12, color: AppColors.textDark),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// Featured Banner
+class _FeaturedBanner extends StatelessWidget {
+  final String title;
+  final String description;
+  final String imageUrl;
+  final VoidCallback onTap;
+
+  const _FeaturedBanner({
+    required this.title,
+    required this.description,
+    required this.imageUrl,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Container(
+                height: 150,
+                width: double.infinity,
+                color: AppColors.primaryBlue.withOpacity(0.2),
+                child: Image.asset(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  height: 150,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback when image can't be loaded
+                    return Center(
+                      child: Icon(
+                        Icons.image,
+                        size: 64,
+                        color: AppColors.primaryBlue.withOpacity(0.5),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryBlue,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    description,
+                    style: TextStyle(fontSize: 14, color: AppColors.textDark),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton.icon(
+                        onPressed: onTap,
+                        icon: const Icon(Icons.arrow_forward),
+                        label: const Text('Learn More'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.primaryBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// College Resource Card
+class _ResourceCard extends StatelessWidget {
+  final String title;
+  final String description;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ResourceCard({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: AppColors.primaryBlue, size: 30),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      description,
+                      style: TextStyle(fontSize: 14, color: AppColors.textDark),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 16),
+            ],
+          ),
         ),
       ),
     );
