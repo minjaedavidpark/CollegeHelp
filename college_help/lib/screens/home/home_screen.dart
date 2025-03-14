@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
+import 'tabs/home_tab.dart';
+import 'tabs/dining_tab.dart';
+import 'tabs/residence_tab.dart';
+import 'tabs/events_tab.dart';
+import 'tabs/academics_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool isGuest;
@@ -45,11 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         children: const [
-          _HomeTab(),
-          _DiningTab(),
-          _ResidenceTab(),
-          _EventsTab(),
-          _AcademicsTab(),
+          HomeTab(),
+          DiningTab(),
+          ResidenceTab(),
+          EventsTab(),
+          AcademicsTab(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
