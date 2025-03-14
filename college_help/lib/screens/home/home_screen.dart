@@ -12,14 +12,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  final PageController _pageController = PageController();
 
-  final List<Widget> _screens = [
-    const _HomeTab(),
-    const _DiningTab(),
-    const _ResidenceTab(),
-    const _EventsTab(),
-    const _AcademicsTab(),
-  ];
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,23 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(icon: const Icon(Icons.account_circle), onPressed: () {}),
         ],
       ),
-      body: _screens[_currentIndex],
+      body: PageView(
+        controller: _pageController,
+        physics:
+            const NeverScrollableScrollPhysics(), // Disable swiping between tabs
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        children: const [
+          _HomeTab(),
+          _DiningTab(),
+          _ResidenceTab(),
+          _EventsTab(),
+          _AcademicsTab(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
@@ -57,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {
             _currentIndex = index;
           });
+          _pageController.jumpToPage(index);
         },
       ),
     );
@@ -69,187 +85,187 @@ class _HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
+    // Calculate available height for content
+    final screenHeight = MediaQuery.of(context).size.height;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final appBarHeight = AppBar().preferredSize.height;
+    final bottomNavHeight = kBottomNavigationBarHeight;
+    final availableHeight =
+        screenHeight - statusBarHeight - appBarHeight - bottomNavHeight;
+
+    return ListView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16.0),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight:
-              MediaQuery.of(context).size.height -
-              kToolbarHeight -
-              kBottomNavigationBarHeight -
-              MediaQuery.of(context).padding.top -
-              MediaQuery.of(context).padding.bottom,
+      children: [
+        // Welcome section
+        const Text(
+          'Welcome to New College',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryBlue,
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        const SizedBox(height: 8),
+        Text(
+          'Your one-stop portal for all college services',
+          style: TextStyle(fontSize: 16, color: AppColors.textLight),
+        ),
+        const SizedBox(height: 24),
+
+        // Scroll indicator
+        Center(
+          child: Container(
+            width: 50,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: AppColors.primaryBlue.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+
+        // Featured Section
+        _FeaturedBanner(
+          title: 'New College Orientation Week',
+          description:
+              'Join us for a week of activities to welcome new students',
+          imageUrl: 'assets/images/orientation.jpg',
+          onTap: () {},
+        ),
+        const SizedBox(height: 24),
+
+        // Announcements section
+        const _SectionHeader(title: 'Announcements', icon: Icons.campaign),
+        const SizedBox(height: 8),
+        _AnnouncementCard(
+          title: 'Fall Registration Open',
+          date: 'July 15, 2023',
+          description:
+              'Registration for Fall 2023 courses is now open. Please check your enrollment time on ACORN.',
+          priority: 'High',
+          onTap: () {},
+        ),
+        const SizedBox(height: 12),
+        _AnnouncementCard(
+          title: 'Residence Move-In Weekend',
+          date: 'August 30, 2023',
+          description:
+              'Residence move-in will begin on August 30. Check your email for specific time slots.',
+          priority: 'Medium',
+          onTap: () {},
+        ),
+        const SizedBox(height: 12),
+        _AnnouncementCard(
+          title: 'Winter Registration Deadline Extended',
+          date: 'November 15, 2023',
+          description:
+              'The deadline for Winter 2024 course registration has been extended to December 1, 2023.',
+          priority: 'Low',
+          onTap: () {},
+        ),
+        const SizedBox(height: 24),
+
+        // Quick Links section
+        const _SectionHeader(title: 'Quick Links', icon: Icons.link),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 16,
+          runSpacing: 16,
           children: [
-            // Welcome section
-            const Text(
-              'Welcome to New College',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryBlue,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Your one-stop portal for all college services',
-              style: TextStyle(fontSize: 16, color: AppColors.textLight),
-            ),
-            const SizedBox(height: 24),
-
-            // Featured Section
-            _FeaturedBanner(
-              title: 'New College Orientation Week',
-              description:
-                  'Join us for a week of activities to welcome new students',
-              imageUrl: 'assets/images/orientation.jpg',
+            _QuickLinkButton(
+              icon: Icons.calendar_today,
+              label: 'Academic Calendar',
               onTap: () {},
             ),
-            const SizedBox(height: 24),
-
-            // Announcements section
-            const _SectionHeader(title: 'Announcements', icon: Icons.campaign),
-            const SizedBox(height: 8),
-            _AnnouncementCard(
-              title: 'Fall Registration Open',
-              date: 'July 15, 2023',
-              description:
-                  'Registration for Fall 2023 courses is now open. Please check your enrollment time on ACORN.',
-              priority: 'High',
+            _QuickLinkButton(icon: Icons.book, label: 'Library', onTap: () {}),
+            _QuickLinkButton(
+              icon: Icons.map,
+              label: 'Campus Map',
               onTap: () {},
             ),
-            const SizedBox(height: 12),
-            _AnnouncementCard(
-              title: 'Residence Move-In Weekend',
-              date: 'August 30, 2023',
-              description:
-                  'Residence move-in will begin on August 30. Check your email for specific time slots.',
-              priority: 'Medium',
+            _QuickLinkButton(
+              icon: Icons.email,
+              label: 'Contact Staff',
               onTap: () {},
             ),
-            const SizedBox(height: 12),
-            _AnnouncementCard(
-              title: 'Winter Registration Deadline Extended',
-              date: 'November 15, 2023',
-              description:
-                  'The deadline for Winter 2024 course registration has been extended to December 1, 2023.',
-              priority: 'Low',
+            _QuickLinkButton(
+              icon: Icons.computer,
+              label: 'Quercus',
               onTap: () {},
             ),
-            const SizedBox(height: 24),
-
-            // Quick Links section
-            const _SectionHeader(title: 'Quick Links', icon: Icons.link),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                _QuickLinkButton(
-                  icon: Icons.calendar_today,
-                  label: 'Academic Calendar',
-                  onTap: () {},
-                ),
-                _QuickLinkButton(
-                  icon: Icons.book,
-                  label: 'Library',
-                  onTap: () {},
-                ),
-                _QuickLinkButton(
-                  icon: Icons.map,
-                  label: 'Campus Map',
-                  onTap: () {},
-                ),
-                _QuickLinkButton(
-                  icon: Icons.email,
-                  label: 'Contact Staff',
-                  onTap: () {},
-                ),
-                _QuickLinkButton(
-                  icon: Icons.computer,
-                  label: 'Quercus',
-                  onTap: () {},
-                ),
-                _QuickLinkButton(
-                  icon: Icons.account_balance_wallet,
-                  label: 'ACORN',
-                  onTap: () {},
-                ),
-                _QuickLinkButton(
-                  icon: Icons.health_and_safety,
-                  label: 'Health Services',
-                  onTap: () {},
-                ),
-                _QuickLinkButton(
-                  icon: Icons.sports,
-                  label: 'Athletics',
-                  onTap: () {},
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // College Resources
-            const _SectionHeader(
-              title: 'College Resources',
-              icon: Icons.school,
-            ),
-            const SizedBox(height: 12),
-            _ResourceCard(
-              title: 'New College Writing Centre',
-              description:
-                  'Book appointments for writing support and essay feedback',
-              icon: Icons.edit_document,
+            _QuickLinkButton(
+              icon: Icons.account_balance_wallet,
+              label: 'ACORN',
               onTap: () {},
             ),
-            const SizedBox(height: 12),
-            _ResourceCard(
-              title: 'D.G. Ivey Library',
-              description: 'Access study spaces, books, and resources',
-              icon: Icons.local_library,
+            _QuickLinkButton(
+              icon: Icons.health_and_safety,
+              label: 'Health Services',
               onTap: () {},
             ),
-            const SizedBox(height: 12),
-            _ResourceCard(
-              title: 'Academic Advising',
-              description: 'Schedule meetings with college academic advisors',
-              icon: Icons.people,
-              onTap: () {},
-            ),
-            const SizedBox(height: 24),
-
-            // Upcoming Events
-            const _SectionHeader(
-              title: 'Upcoming Events',
-              icon: Icons.event_note,
-            ),
-            const SizedBox(height: 12),
-            _EventCard(
-              title: 'Welcome Week Orientation',
-              date: 'September 5, 2023',
-              location: 'New College Quad',
-              onTap: () {},
-            ),
-            const SizedBox(height: 12),
-            _EventCard(
-              title: 'Student Club Fair',
-              date: 'September 10, 2023',
-              location: 'Wilson Hall',
-              onTap: () {},
-            ),
-            const SizedBox(height: 12),
-            _EventCard(
-              title: 'New College Student Council Meeting',
-              date: 'September 15, 2023',
-              location: 'Wilson Hall Room 1017',
+            _QuickLinkButton(
+              icon: Icons.sports,
+              label: 'Athletics',
               onTap: () {},
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 24),
+
+        // College Resources
+        const _SectionHeader(title: 'College Resources', icon: Icons.school),
+        const SizedBox(height: 12),
+        _ResourceCard(
+          title: 'New College Writing Centre',
+          description:
+              'Book appointments for writing support and essay feedback',
+          icon: Icons.edit_document,
+          onTap: () {},
+        ),
+        const SizedBox(height: 12),
+        _ResourceCard(
+          title: 'D.G. Ivey Library',
+          description: 'Access study spaces, books, and resources',
+          icon: Icons.local_library,
+          onTap: () {},
+        ),
+        const SizedBox(height: 12),
+        _ResourceCard(
+          title: 'Academic Advising',
+          description: 'Schedule meetings with college academic advisors',
+          icon: Icons.people,
+          onTap: () {},
+        ),
+        const SizedBox(height: 24),
+
+        // Upcoming Events
+        const _SectionHeader(title: 'Upcoming Events', icon: Icons.event_note),
+        const SizedBox(height: 12),
+        _EventCard(
+          title: 'Welcome Week Orientation',
+          date: 'September 5, 2023',
+          location: 'New College Quad',
+          onTap: () {},
+        ),
+        const SizedBox(height: 12),
+        _EventCard(
+          title: 'Student Club Fair',
+          date: 'September 10, 2023',
+          location: 'Wilson Hall',
+          onTap: () {},
+        ),
+        const SizedBox(height: 12),
+        _EventCard(
+          title: 'New College Student Council Meeting',
+          date: 'September 15, 2023',
+          location: 'Wilson Hall Room 1017',
+          onTap: () {},
+        ),
+        // Add extra space at the bottom for better scrolling
+        const SizedBox(height: 40),
+      ],
     );
   }
 }
@@ -260,7 +276,40 @@ class _DiningTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Dining information coming soon'));
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        const SizedBox(height: 16),
+        const Center(
+          child: Icon(
+            Icons.restaurant_menu,
+            size: 80,
+            color: AppColors.primaryBlue,
+          ),
+        ),
+        const SizedBox(height: 24),
+        const Center(
+          child: Text(
+            'Dining Information',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryBlue,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            'Menus and meal plan information coming soon',
+            style: TextStyle(fontSize: 16, color: AppColors.textLight),
+          ),
+        ),
+        // Add more placeholder content to ensure scrolling works for testing
+        const SizedBox(height: 1000),
+      ],
+    );
   }
 }
 
@@ -270,7 +319,36 @@ class _ResidenceTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Residence information coming soon'));
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        const SizedBox(height: 16),
+        const Center(
+          child: Icon(Icons.apartment, size: 80, color: AppColors.primaryBlue),
+        ),
+        const SizedBox(height: 24),
+        const Center(
+          child: Text(
+            'Residence Information',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryBlue,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            'Housing details and residence services coming soon',
+            style: TextStyle(fontSize: 16, color: AppColors.textLight),
+          ),
+        ),
+        // Add more placeholder content to ensure scrolling works for testing
+        const SizedBox(height: 1000),
+      ],
+    );
   }
 }
 
@@ -280,7 +358,36 @@ class _EventsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Events calendar coming soon'));
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        const SizedBox(height: 16),
+        const Center(
+          child: Icon(Icons.event, size: 80, color: AppColors.primaryBlue),
+        ),
+        const SizedBox(height: 24),
+        const Center(
+          child: Text(
+            'Events Calendar',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryBlue,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            'College events and activities calendar coming soon',
+            style: TextStyle(fontSize: 16, color: AppColors.textLight),
+          ),
+        ),
+        // Add more placeholder content to ensure scrolling works for testing
+        const SizedBox(height: 1000),
+      ],
+    );
   }
 }
 
@@ -290,7 +397,36 @@ class _AcademicsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Academic resources coming soon'));
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        const SizedBox(height: 16),
+        const Center(
+          child: Icon(Icons.school, size: 80, color: AppColors.primaryBlue),
+        ),
+        const SizedBox(height: 24),
+        const Center(
+          child: Text(
+            'Academic Resources',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryBlue,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            'Course information and academic support coming soon',
+            style: TextStyle(fontSize: 16, color: AppColors.textLight),
+          ),
+        ),
+        // Add more placeholder content to ensure scrolling works for testing
+        const SizedBox(height: 1000),
+      ],
+    );
   }
 }
 
