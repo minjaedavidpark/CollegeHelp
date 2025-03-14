@@ -131,7 +131,7 @@ class _HomeTab extends StatelessWidget {
           title: 'New College Orientation Week',
           description:
               'Join us for a week of activities to welcome new students',
-          imageUrl: 'assets/images/orientation.jpg',
+          imageUrl: 'assets/images/new_college.png',
           onTap: () {},
         ),
         const SizedBox(height: 24),
