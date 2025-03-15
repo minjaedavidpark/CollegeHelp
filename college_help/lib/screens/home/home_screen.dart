@@ -205,9 +205,271 @@ class _HomeScreenState extends State<HomeScreen>
           size: 24,
         ),
         onPressed: () {
-          // Show notifications
+          _showNotificationsPanel(context);
         },
         tooltip: 'Notifications',
+      ),
+    );
+  }
+
+  void _showNotificationsPanel(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 20,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      offset: const Offset(0, 2),
+                      blurRadius: 4.0,
+                    ),
+                  ],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Notifications',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryBlue,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            // Mark all as read functionality
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'All notifications marked as read',
+                                ),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Mark all as read'),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.grey),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Notification List
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  children: [
+                    _buildNotificationItem(
+                      context,
+                      title: 'Registration Deadline Approaching',
+                      message:
+                          'Course registration for Fall 2023 closes in 3 days. Make sure to finalize your course selections.',
+                      time: '2 hours ago',
+                      icon: Icons.warning_rounded,
+                      iconColor: Colors.orange,
+                      isUnread: true,
+                    ),
+                    _buildNotificationItem(
+                      context,
+                      title: 'New Announcement from Registrar',
+                      message:
+                          'Important information about graduation requirements has been posted. Check the Registrar\'s tab for details.',
+                      time: '1 day ago',
+                      icon: Icons.school,
+                      iconColor: AppColors.primaryBlue,
+                      isUnread: true,
+                    ),
+                    _buildNotificationItem(
+                      context,
+                      title: 'Dining Hall Special Event',
+                      message:
+                          'International Food Festival this Friday at Wilson Hall Dining Commons. Join us for a culinary journey around the world!',
+                      time: '2 days ago',
+                      icon: Icons.restaurant,
+                      iconColor: Colors.green,
+                      isUnread: false,
+                    ),
+                    _buildNotificationItem(
+                      context,
+                      title: 'Residence Maintenance Notice',
+                      message:
+                          'Scheduled water shutdown in Wetmore Hall on Saturday from 10 AM to 2 PM for routine maintenance.',
+                      time: '3 days ago',
+                      icon: Icons.home_repair_service,
+                      iconColor: Colors.brown,
+                      isUnread: false,
+                    ),
+                    _buildNotificationItem(
+                      context,
+                      title: 'New Event: Career Fair',
+                      message:
+                          'Annual Career Fair next Tuesday in Wilson Hall. Over 50 employers will be present. Don\'t forget to bring your resume!',
+                      time: '4 days ago',
+                      icon: Icons.work,
+                      iconColor: Colors.purple,
+                      isUnread: false,
+                    ),
+                    _buildNotificationItem(
+                      context,
+                      title: 'Library Hours Extended',
+                      message:
+                          'D.G. Ivey Library will have extended hours during finals week. Open until 2 AM from December 10-20.',
+                      time: '5 days ago',
+                      icon: Icons.book,
+                      iconColor: Colors.teal,
+                      isUnread: false,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNotificationItem(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required String time,
+    required IconData icon,
+    required Color iconColor,
+    required bool isUnread,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color:
+            isUnread ? AppColors.primaryBlue.withOpacity(0.05) : Colors.white,
+        border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: iconColor),
+        ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ),
+            if (isUnread)
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryRed,
+                  shape: BoxShape.circle,
+                ),
+              ),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(
+              message,
+              style: TextStyle(color: AppColors.textDark, fontSize: 13),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              time,
+              style: TextStyle(color: AppColors.textLight, fontSize: 12),
+            ),
+          ],
+        ),
+        onTap: () {
+          // Handle notification tap
+          Navigator.pop(context);
+
+          // Show a dialog with the notification details
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: Row(
+                  children: [
+                    Icon(icon, color: iconColor),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(title)),
+                  ],
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(message, style: const TextStyle(fontSize: 16)),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Received: $time',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textLight,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Close'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
