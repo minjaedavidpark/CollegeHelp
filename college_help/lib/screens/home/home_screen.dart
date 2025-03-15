@@ -5,6 +5,7 @@ import 'tabs/dining_tab.dart';
 import 'tabs/residence_tab.dart';
 import 'tabs/events_tab.dart';
 import 'tabs/registrar_tab.dart';
+import 'dart:math' as math;
 
 class HomeScreen extends StatefulWidget {
   final bool isGuest;
@@ -15,51 +16,252 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
+  late AnimationController _animationController;
+  final List<String> _tabTitles = [
+    'Home',
+    'Dining',
+    'Residence',
+    'Events',
+    'Registrar\'s Office',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 20),
+    )..repeat();
+  }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('New College Portal'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              // Show notifications
-            },
+      extendBodyBehindAppBar: true,
+      appBar: _buildEnhancedAppBar(),
+      body: Container(
+        // Add a subtle gradient to the entire app background
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.grey[50]!, Colors.white],
+            stops: const [0.0, 0.3],
           ),
-          IconButton(icon: const Icon(Icons.account_circle), onPressed: () {}),
-        ],
+        ),
+        child: SafeArea(
+          child: PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            children: const [
+              HomeTab(),
+              DiningTab(),
+              ResidenceTab(),
+              EventsTab(),
+              RegistrarTab(),
+            ],
+          ),
+        ),
       ),
-      body: PageView(
-        controller: _pageController,
-        physics:
-            const NeverScrollableScrollPhysics(), // Disable swiping between tabs
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+      bottomNavigationBar: _buildAnimatedNavBar(),
+    );
+  }
+
+  // Enhanced app bar with animation and modern design
+  PreferredSizeWidget _buildEnhancedAppBar() {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(65),
+      child: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              offset: const Offset(0, 2),
+              blurRadius: 4.0,
+            ),
+          ],
+        ),
+        child: AppBar(
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          flexibleSpace: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF00205C), // Deeper blue
+                      AppColors.primaryBlue,
+                      const Color(0xFF0A3A7D), // Slightly lighter blue
+                    ],
+                  ),
+                ),
+                child: CustomPaint(
+                  painter: TopBarWavePainter(
+                    animation: _animationController.value,
+                  ),
+                  child: child,
+                ),
+              );
+            },
+            child: const SizedBox.expand(),
+          ),
+          leadingWidth: 40,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                size: 20,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.maybePop(context);
+              },
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.2),
+                padding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Decorative dot
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryRed.withOpacity(0.7),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Main title text
+              const Text(
+                'New College Portal',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Second decorative dot
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryRed.withOpacity(0.7),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
+          ),
+          centerTitle: true,
+          actions: [
+            _buildNotificationButton(),
+            const SizedBox(width: 6),
+            _buildProfileButton(),
+            const SizedBox(width: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationButton() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: const Icon(
+          Icons.notifications_outlined,
+          color: Colors.white,
+          size: 24,
+        ),
+        onPressed: () {
+          // Show notifications
         },
-        children: const [
-          HomeTab(),
-          DiningTab(),
-          ResidenceTab(),
-          EventsTab(),
-          RegistrarTab(),
+        tooltip: 'Notifications',
+      ),
+    );
+  }
+
+  Widget _buildProfileButton() {
+    return Container(
+      width: 40,
+      height: 40,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+      ),
+      child: IconButton(
+        icon: const Icon(
+          Icons.account_circle_outlined,
+          color: Colors.white,
+          size: 24,
+        ),
+        onPressed: () {
+          // Show profile
+        },
+        tooltip: 'Profile',
+      ),
+    );
+  }
+
+  Widget _buildAnimatedNavBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            offset: const Offset(0, -2),
+            blurRadius: 4.0,
+          ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
+        backgroundColor: Colors.white,
+        selectedItemColor: AppColors.primaryBlue,
+        unselectedItemColor: Colors.grey[600],
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.normal,
+          fontSize: 11,
+        ),
+        elevation: 0,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
@@ -84,6 +286,72 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+}
+
+// Wave painter for app bar animation
+class TopBarWavePainter extends CustomPainter {
+  final double animation;
+
+  TopBarWavePainter({required this.animation});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Subtle wave patterns
+    final paint =
+        Paint()
+          ..color = Colors.white.withOpacity(0.07)
+          ..style = PaintingStyle.fill;
+
+    const wavePeriod = 3.0;
+    const waveAmplitude = 4.0;
+
+    final path = Path();
+
+    // Starting from the bottom
+    path.moveTo(0, size.height * 0.8);
+
+    // Drawing the wave
+    for (double x = 0; x <= size.width; x++) {
+      final y =
+          size.height * 0.8 +
+          math.sin(
+                (x / size.width * wavePeriod * math.pi) +
+                    (animation * math.pi * 2),
+              ) *
+              waveAmplitude;
+      path.lineTo(x, y);
+    }
+
+    // Completing the path
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    canvas.drawPath(path, paint);
+
+    // Draw some decorative particles
+    final particlePaint =
+        Paint()
+          ..color = Colors.white.withOpacity(0.1)
+          ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < 8; i++) {
+      final particleX = size.width * ((i * 127) % 100) / 100;
+      final particleY = size.height * ((i * 59) % 60) / 100;
+      final particleSize = 0.5 + ((i * 13) % 3) / 2;
+
+      canvas.drawCircle(
+        Offset(particleX, particleY),
+        particleSize,
+        particlePaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant TopBarWavePainter oldDelegate) {
+    return oldDelegate.animation != animation;
   }
 }
 
