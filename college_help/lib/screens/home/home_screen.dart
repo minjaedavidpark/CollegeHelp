@@ -129,23 +129,15 @@ class _HomeScreenState extends State<HomeScreen>
             },
             child: const SizedBox.expand(),
           ),
-          leadingWidth: 40,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 12.0),
-            child: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                size: 20,
-                color: Colors.white,
+          leadingWidth: 90, // Increased to fit two buttons
+          leading: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: _buildSearchButton(),
               ),
-              onPressed: () {
-                Navigator.maybePop(context);
-              },
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.2),
-                padding: EdgeInsets.zero,
-              ),
-            ),
+              _buildHelpButton(),
+            ],
           ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -162,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(width: 10),
               // Main title text
               const Text(
-                'New College Portal',
+                'New College',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -813,6 +805,237 @@ class _HomeScreenState extends State<HomeScreen>
           });
           _pageController.jumpToPage(index);
         },
+      ),
+    );
+  }
+
+  // New search button that matches the style of other buttons
+  Widget _buildSearchButton() {
+    return Container(
+      width: 40,
+      height: 40,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: const Icon(Icons.search, color: Colors.white, size: 24),
+        onPressed: () {
+          // Show search dialog
+          _showSearchDialog(context);
+        },
+        tooltip: 'Search',
+        padding: EdgeInsets.zero,
+      ),
+    );
+  }
+
+  // New help button that matches the style of other buttons
+  Widget _buildHelpButton() {
+    return Container(
+      width: 40,
+      height: 40,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: const Icon(Icons.help_outline, color: Colors.white, size: 24),
+        onPressed: () {
+          // Show help options
+          _showHelpDialog(context);
+        },
+        tooltip: 'Help',
+        padding: EdgeInsets.zero,
+      ),
+    );
+  }
+
+  // Show search dialog
+  void _showSearchDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text('Search'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search for services, events...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                autofocus: true,
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                children: [
+                  _buildSearchChip('Courses'),
+                  _buildSearchChip('Events'),
+                  _buildSearchChip('Dining'),
+                  _buildSearchChip('Faculty'),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Here would be search functionality
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Search feature coming soon'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Search'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Build search chip
+  Widget _buildSearchChip(String label) {
+    return Chip(
+      label: Text(label),
+      backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
+      labelStyle: TextStyle(color: AppColors.primaryBlue),
+    );
+  }
+
+  // Show help dialog
+  void _showHelpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.help_outline, color: AppColors.primaryBlue),
+              const SizedBox(width: 12),
+              const Text('Help & Support'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHelpOption(
+                icon: Icons.contact_support,
+                title: 'Contact Support',
+                description: 'Chat with our support team',
+              ),
+              const SizedBox(height: 16),
+              _buildHelpOption(
+                icon: Icons.question_answer,
+                title: 'FAQs',
+                description: 'Frequently asked questions',
+              ),
+              const SizedBox(height: 16),
+              _buildHelpOption(
+                icon: Icons.video_library,
+                title: 'Tutorial Videos',
+                description: 'Learn how to use the app',
+              ),
+              const SizedBox(height: 16),
+              _buildHelpOption(
+                icon: Icons.feedback,
+                title: 'Send Feedback',
+                description: 'Help us improve the app',
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Build help option
+  Widget _buildHelpOption({
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$title feature coming soon'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: AppColors.primaryBlue),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    description,
+                    style: TextStyle(color: AppColors.textLight, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16),
+          ],
+        ),
       ),
     );
   }
