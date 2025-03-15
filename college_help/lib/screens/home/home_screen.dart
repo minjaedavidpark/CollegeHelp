@@ -4,7 +4,7 @@ import 'tabs/home_tab.dart';
 import 'tabs/dining_tab.dart';
 import 'tabs/residence_tab.dart';
 import 'tabs/events_tab.dart';
-import 'tabs/academics_tab.dart';
+import 'tabs/registrar_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool isGuest;
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           DiningTab(),
           ResidenceTab(),
           EventsTab(),
-          AcademicsTab(),
+          RegistrarTab(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -71,7 +71,10 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Residence',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: 'Academics'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: 'Registrar\'s',
+          ),
         ],
         onTap: (index) {
           setState(() {
@@ -1298,9 +1301,9 @@ class _EventsTab extends StatelessWidget {
   }
 }
 
-// Academics Tab Placeholder
-class _AcademicsTab extends StatelessWidget {
-  const _AcademicsTab();
+// Registrar Tab Placeholder
+class _RegistrarTab extends StatelessWidget {
+  const _RegistrarTab();
 
   @override
   Widget build(BuildContext context) {
