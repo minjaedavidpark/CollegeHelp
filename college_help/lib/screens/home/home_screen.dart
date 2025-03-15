@@ -5,6 +5,7 @@ import 'tabs/dining_tab.dart';
 import 'tabs/residence_tab.dart';
 import 'tabs/events_tab.dart';
 import 'tabs/registrar_tab.dart';
+import 'profile_screen.dart';
 import 'dart:math' as math;
 
 class HomeScreen extends StatefulWidget {
@@ -236,14 +237,18 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _showProfileMenu(BuildContext context) {
+    // Calculate position relative to the profile button
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
     showMenu<dynamic>(
       context: context,
       position: RelativeRect.fromLTRB(
-        100,
-        100,
-        0,
-        0,
-      ), // Default position that will be adjusted
+        MediaQuery.of(context).size.width - 170, // Position to the right
+        kToolbarHeight + 10, // Position below app bar
+        20, // Right padding
+        0, // No constraint from bottom
+      ),
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: Colors.white,
@@ -267,7 +272,9 @@ class _HomeScreenState extends State<HomeScreen>
           onTap: () {
             // Navigate to profile screen
             Future.delayed(Duration.zero, () {
-              // Navigate to profile page
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
             });
           },
         ),
@@ -290,7 +297,36 @@ class _HomeScreenState extends State<HomeScreen>
           onTap: () {
             // Navigate to settings
             Future.delayed(Duration.zero, () {
-              // Navigate to settings page
+              // We'll show a "Coming Soon" dialog for settings
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    title: const Row(
+                      children: [
+                        Icon(Icons.settings, color: AppColors.primaryBlue),
+                        SizedBox(width: 12),
+                        Text('Settings'),
+                      ],
+                    ),
+                    content: const Text(
+                      'Settings will be available in the next update.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
             });
           },
         ),

@@ -115,16 +115,14 @@ class _RegistrarTabState extends State<RegistrarTab>
             animation: _animationController,
             builder: (context, child) {
               return CustomPaint(
-                painter: WavePainter(
-                  animation: _animationController.value,
-                ),
+                painter: WavePainter(animation: _animationController.value),
                 child: child,
               );
             },
             child: const SizedBox.expand(),
           ),
         ),
-        
+
         // Simplified content - combining title and subtitle elements
         Positioned(
           top: 30,
@@ -228,7 +226,10 @@ class _RegistrarTabState extends State<RegistrarTab>
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
                 child: const Center(
                   child: Icon(
@@ -241,17 +242,14 @@ class _RegistrarTabState extends State<RegistrarTab>
             ],
           ),
         ),
-        
+
         // Alert Banner
         Positioned(
           bottom: 10,
           left: 20,
           right: 20,
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 6,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.secondaryRed.withOpacity(0.2),
               borderRadius: BorderRadius.circular(6),
@@ -335,7 +333,7 @@ class _RegistrarTabState extends State<RegistrarTab>
             ],
           ),
         ),
-        
+
         // Smaller spacing
         const SizedBox(height: 4),
 
@@ -424,7 +422,7 @@ class _RegistrarTabState extends State<RegistrarTab>
           children: [
             // Mini Header for each service view
             _buildServiceHeader(serviceName),
-            
+
             // Content with animation
             Expanded(
               child: AnimatedSwitcher(
@@ -434,7 +432,7 @@ class _RegistrarTabState extends State<RegistrarTab>
             ),
           ],
         ),
-        
+
         // Back button
         Positioned(
           top: 12,
@@ -453,7 +451,7 @@ class _RegistrarTabState extends State<RegistrarTab>
       ],
     );
   }
-  
+
   // Build the mini-header for each service detail view
   Widget _buildServiceHeader(String serviceName) {
     // Get the service item data based on name
@@ -461,7 +459,7 @@ class _RegistrarTabState extends State<RegistrarTab>
       (service) => service.title == serviceName,
       orElse: () => _services[0],
     );
-    
+
     return Container(
       height: 60,
       width: double.infinity,
@@ -469,10 +467,7 @@ class _RegistrarTabState extends State<RegistrarTab>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            serviceItem.color,
-            serviceItem.color.withOpacity(0.8),
-          ],
+          colors: [serviceItem.color, serviceItem.color.withOpacity(0.8)],
         ),
       ),
       child: Stack(
@@ -480,12 +475,10 @@ class _RegistrarTabState extends State<RegistrarTab>
           // Subtle wave decoration
           Positioned.fill(
             child: CustomPaint(
-              painter: MiniWavePainter(
-                color: Colors.white.withOpacity(0.1),
-              ),
+              painter: MiniWavePainter(color: Colors.white.withOpacity(0.1)),
             ),
           ),
-          
+
           // Service icon and title
           Padding(
             padding: const EdgeInsets.fromLTRB(60, 0, 20, 0),
@@ -497,11 +490,7 @@ class _RegistrarTabState extends State<RegistrarTab>
                     color: Colors.white.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    serviceItem.icon,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  child: Icon(serviceItem.icon, color: Colors.white, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -553,13 +542,15 @@ class _RegistrarTabState extends State<RegistrarTab>
           _buildContactCard(
             icon: Icons.location_on,
             title: 'Visit Us',
-            content: 'Student Services Building\n123 University Avenue\nRoom 301',
+            content:
+                'Student Services Building\n123 University Avenue\nRoom 301',
           ),
           const SizedBox(height: 16),
           _buildContactCard(
             icon: Icons.email,
             title: 'Email Us',
-            content: 'registrar@university.edu\nResponse time: 1-2 business days',
+            content:
+                'registrar@university.edu\nResponse time: 1-2 business days',
           ),
           const SizedBox(height: 16),
           _buildContactCard(
@@ -1036,7 +1027,10 @@ class _RegistrarTabState extends State<RegistrarTab>
               icon: const Icon(Icons.folder_open),
               label: const Text('View All Forms Repository'),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 24,
+                ),
               ),
             ),
           ),
@@ -1688,72 +1682,86 @@ class WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // First set of waves
-    final paint1 = Paint()
-      ..color = Colors.white.withOpacity(0.1)
-      ..style = PaintingStyle.fill;
-      
+    final paint1 =
+        Paint()
+          ..color = Colors.white.withOpacity(0.1)
+          ..style = PaintingStyle.fill;
+
     // Second set of waves
-    final paint2 = Paint()
-      ..color = Colors.white.withOpacity(0.05)
-      ..style = PaintingStyle.fill;
+    final paint2 =
+        Paint()
+          ..color = Colors.white.withOpacity(0.05)
+          ..style = PaintingStyle.fill;
 
     const wavePeriod = 12.0; // Controls wave frequency
     const waveAmplitude = 7.0; // Reduced from 10.0
-    
+
     final path1 = Path();
     final path2 = Path();
-    
-    // Setting start points - a bit higher in the header 
+
+    // Setting start points - a bit higher in the header
     path1.moveTo(0, size.height * 0.6);
     path2.moveTo(0, size.height * 0.7);
-    
+
     // First wave path
     for (double x = 0; x <= size.width; x++) {
-      final y1 = size.height * 0.6 +
-          math.sin((x / size.width * wavePeriod * math.pi) + animation * math.pi * 2) *
+      final y1 =
+          size.height * 0.6 +
+          math.sin(
+                (x / size.width * wavePeriod * math.pi) +
+                    animation * math.pi * 2,
+              ) *
               waveAmplitude;
       path1.lineTo(x, y1);
     }
-    
+
     // Complete first path
     path1.lineTo(size.width, size.height);
     path1.lineTo(0, size.height);
     path1.close();
-    
+
     // Second wave path (offset)
     for (double x = 0; x <= size.width; x++) {
-      final y2 = size.height * 0.7 +
-          math.sin((x / size.width * wavePeriod * math.pi) + (animation + 0.5) * math.pi * 2) *
+      final y2 =
+          size.height * 0.7 +
+          math.sin(
+                (x / size.width * wavePeriod * math.pi) +
+                    (animation + 0.5) * math.pi * 2,
+              ) *
               waveAmplitude;
       path2.lineTo(x, y2);
     }
-    
+
     // Complete second path
     path2.lineTo(size.width, size.height);
     path2.lineTo(0, size.height);
     path2.close();
-    
+
     // Draw the paths
     canvas.drawPath(path2, paint2);
     canvas.drawPath(path1, paint1);
-    
+
     // Fewer particles for a cleaner look
-    final particlePaint = Paint()
-      ..color = Colors.white.withOpacity(0.15)
-      ..style = PaintingStyle.fill;
-      
+    final particlePaint =
+        Paint()
+          ..color = Colors.white.withOpacity(0.15)
+          ..style = PaintingStyle.fill;
+
     // Generate some dots based on animation value
-    for (int i = 0; i < 12; i++) { // Reduced from 20
+    for (int i = 0; i < 12; i++) {
+      // Reduced from 20
       final particleX = size.width * ((i * 127) % 100) / 100;
-      final particleY = size.height * 0.2 + ((i * 59) % 50) / 100 * size.height * 0.5;
+      final particleY =
+          size.height * 0.2 + ((i * 59) % 50) / 100 * size.height * 0.5;
       final particleSize = 0.8 + ((i * 13) % 3); // Smaller particles
-      
+
       // Make particles pulse with the animation
-      final pulseOffset = math.sin((animation * math.pi * 2) + (i / 10)) * 0.5 + 0.5;
+      final pulseOffset =
+          math.sin((animation * math.pi * 2) + (i / 10)) * 0.5 + 0.5;
       final particleOpacity = 0.08 + 0.08 * pulseOffset;
-      
+
       particlePaint.color = Colors.white.withOpacity(particleOpacity);
-      
+
       canvas.drawCircle(
         Offset(particleX, particleY),
         particleSize,
@@ -1771,32 +1779,33 @@ class WavePainter extends CustomPainter {
 // Simplified wave painter for service detail headers
 class MiniWavePainter extends CustomPainter {
   final Color color;
-  
+
   MiniWavePainter({required this.color});
-  
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-      
+    final paint =
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.fill;
+
     final path = Path();
     path.moveTo(0, size.height * 0.7);
-    
+
     // Simple wave pattern
     for (double x = 0; x <= size.width; x++) {
       final dx = x / size.width;
       final y = size.height * 0.7 + math.sin(dx * math.pi * 4) * 4;
       path.lineTo(x, y);
     }
-    
+
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();
-    
+
     canvas.drawPath(path, paint);
   }
-  
+
   @override
   bool shouldRepaint(covariant MiniWavePainter oldDelegate) {
     return oldDelegate.color != color;
