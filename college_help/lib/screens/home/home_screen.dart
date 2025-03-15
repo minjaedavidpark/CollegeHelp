@@ -221,18 +221,197 @@ class _HomeScreenState extends State<HomeScreen>
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
       ),
-      child: IconButton(
-        icon: const Icon(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          _showProfileMenu(context);
+        },
+        child: const Icon(
           Icons.account_circle_outlined,
           color: Colors.white,
           size: 24,
         ),
-        onPressed: () {
-          // Show profile
-        },
-        tooltip: 'Profile',
       ),
     );
+  }
+
+  void _showProfileMenu(BuildContext context) {
+    showMenu<dynamic>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        100,
+        100,
+        0,
+        0,
+      ), // Default position that will be adjusted
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
+      items: <PopupMenuEntry<dynamic>>[
+        PopupMenuItem<String>(
+          value: 'profile',
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: const Row(
+            children: [
+              Icon(Icons.account_circle, color: AppColors.primaryBlue),
+              SizedBox(width: 12),
+              Text(
+                'View Profile',
+                style: TextStyle(
+                  color: AppColors.primaryBlue,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          onTap: () {
+            // Navigate to profile screen
+            Future.delayed(Duration.zero, () {
+              // Navigate to profile page
+            });
+          },
+        ),
+        PopupMenuItem<String>(
+          value: 'settings',
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: const Row(
+            children: [
+              Icon(Icons.settings, color: AppColors.primaryBlue),
+              SizedBox(width: 12),
+              Text(
+                'Settings',
+                style: TextStyle(
+                  color: AppColors.primaryBlue,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          onTap: () {
+            // Navigate to settings
+            Future.delayed(Duration.zero, () {
+              // Navigate to settings page
+            });
+          },
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem<String>(
+          value: 'logout',
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: const Row(
+            children: [
+              Icon(Icons.logout, color: AppColors.secondaryRed),
+              SizedBox(width: 12),
+              Text(
+                'Log Out',
+                style: TextStyle(
+                  color: AppColors.secondaryRed,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          onTap: () {
+            // We need to delay this because the menu disappears immediately
+            Future.delayed(Duration.zero, () {
+              _showLogoutConfirmationDialog(context);
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.logout, color: AppColors.secondaryRed, size: 24),
+              const SizedBox(width: 12),
+              const Text('Log Out'),
+            ],
+          ),
+          content: const Text(
+            'Are you sure you want to log out of your account?',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _performLogout(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondaryRed,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Log Out'),
+            ),
+          ],
+          actionsPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
+        );
+      },
+    );
+  }
+
+  void _performLogout(BuildContext context) {
+    // Show a loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+
+    // Simulate logout process with a delay
+    Future.delayed(const Duration(seconds: 1), () {
+      Navigator.of(context).pop(); // Remove loading indicator
+
+      // Navigate to login/welcome screen and clear the navigation stack
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/welcome', // Replace with your actual login/welcome route
+        (route) => false,
+      );
+
+      // You can add a snackbar to confirm logout
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Successfully logged out'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    });
   }
 
   Widget _buildAnimatedNavBar() {
@@ -1255,17 +1434,6 @@ class _MealPlanCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: onTap,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text('Learn More'),
                     ),
                   ),
                 ],
