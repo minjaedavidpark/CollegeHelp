@@ -7,6 +7,7 @@ import 'tabs/events_tab.dart';
 import 'tabs/registrar_tab.dart';
 import 'profile_screen.dart';
 import 'dart:math' as math;
+import '../auth/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool isGuest;
@@ -732,34 +733,14 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _performLogout(BuildContext context) {
-    // Show a loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
+    // Navigate directly to the login screen and clear navigation stack
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder:
+            (context) => const LoginScreen(), // Use the actual login screen
+      ),
+      (route) => false, // Remove all previous routes
     );
-
-    // Simulate logout process with a delay
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.of(context).pop(); // Remove loading indicator
-
-      // Navigate to login/welcome screen and clear the navigation stack
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        '/welcome', // Replace with your actual login/welcome route
-        (route) => false,
-      );
-
-      // You can add a snackbar to confirm logout
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Successfully logged out'),
-          behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
-        ),
-      );
-    });
   }
 
   Widget _buildAnimatedNavBar() {
