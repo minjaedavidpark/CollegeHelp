@@ -30,6 +30,9 @@ class _HomeScreenState extends State<HomeScreen>
     'Registrar\'s Office',
   ];
 
+  // Add unread notifications counter
+  int _unreadNotificationsCount = 2; // Starting with 2 unread notifications
+
   @override
   void initState() {
     super.initState();
@@ -192,23 +195,52 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildNotificationButton() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: IconButton(
-        icon: const Icon(
-          Icons.notifications_outlined,
-          color: Colors.white,
-          size: 24,
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: const Icon(
+              Icons.notifications_outlined,
+              color: Colors.white,
+              size: 24,
+            ),
+            onPressed: () {
+              _showNotificationsPanel(context);
+            },
+            tooltip: 'Notifications',
+          ),
         ),
-        onPressed: () {
-          _showNotificationsPanel(context);
-        },
-        tooltip: 'Notifications',
-      ),
+        // Only show badge if there are unread notifications
+        if (_unreadNotificationsCount > 0)
+          Positioned(
+            right: 0,
+            top: 5,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.secondaryRed,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 1.5),
+              ),
+              constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+              child: Center(
+                child: Text(
+                  _unreadNotificationsCount.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -264,7 +296,10 @@ class _HomeScreenState extends State<HomeScreen>
                       children: [
                         TextButton(
                           onPressed: () {
-                            // Mark all as read functionality
+                            // Mark all as read functionality and reset counter
+                            setState(() {
+                              _unreadNotificationsCount = 0;
+                            });
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -301,6 +336,7 @@ class _HomeScreenState extends State<HomeScreen>
                       icon: Icons.warning_rounded,
                       iconColor: Colors.orange,
                       isUnread: true,
+                      notificationId: 0,
                     ),
                     _buildNotificationItem(
                       context,
@@ -311,6 +347,7 @@ class _HomeScreenState extends State<HomeScreen>
                       icon: Icons.school,
                       iconColor: AppColors.primaryBlue,
                       isUnread: true,
+                      notificationId: 1,
                     ),
                     _buildNotificationItem(
                       context,
@@ -321,6 +358,7 @@ class _HomeScreenState extends State<HomeScreen>
                       icon: Icons.restaurant,
                       iconColor: Colors.green,
                       isUnread: false,
+                      notificationId: 2,
                     ),
                     _buildNotificationItem(
                       context,
@@ -331,6 +369,7 @@ class _HomeScreenState extends State<HomeScreen>
                       icon: Icons.home_repair_service,
                       iconColor: Colors.brown,
                       isUnread: false,
+                      notificationId: 3,
                     ),
                     _buildNotificationItem(
                       context,
@@ -341,6 +380,7 @@ class _HomeScreenState extends State<HomeScreen>
                       icon: Icons.work,
                       iconColor: Colors.purple,
                       isUnread: false,
+                      notificationId: 4,
                     ),
                     _buildNotificationItem(
                       context,
@@ -351,6 +391,7 @@ class _HomeScreenState extends State<HomeScreen>
                       icon: Icons.book,
                       iconColor: Colors.teal,
                       isUnread: false,
+                      notificationId: 5,
                     ),
                   ],
                 ),
@@ -370,6 +411,7 @@ class _HomeScreenState extends State<HomeScreen>
     required IconData icon,
     required Color iconColor,
     required bool isUnread,
+    required int notificationId,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -424,6 +466,16 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
         onTap: () {
+          // If notification is unread, reduce the count
+          if (isUnread) {
+            setState(() {
+              _unreadNotificationsCount =
+                  _unreadNotificationsCount > 0
+                      ? _unreadNotificationsCount - 1
+                      : 0;
+            });
+          }
+
           // Handle notification tap
           Navigator.pop(context);
 
