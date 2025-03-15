@@ -44,6 +44,10 @@ class _EventsTabState extends State<EventsTab> {
     // Always add today
     _datesWithEvents.add(now);
 
+    // Add March 19, 2025 (the selected date in the screenshot)
+    final march192025 = DateTime(2025, 3, 19);
+    _datesWithEvents.add(march192025);
+
     // Upcoming events
     _allEvents.addAll([
       _EventItem(
@@ -163,6 +167,77 @@ class _EventsTabState extends State<EventsTab> {
             'Annual fall festival with food, games, music, and activities. Join us for this community-wide celebration!',
         category: 'Social',
         isHighlighted: true,
+      ),
+      // Add more events for March 19, 2025 to test scrolling
+      _EventItem(
+        title: 'Intramural Basketball Signup',
+        date: DateFormat('MMM d, yyyy').format(march192025),
+        time: '10:00 AM - 4:00 PM',
+        location: 'Athletic Center, Room 202',
+        description:
+            'Sign up for the fall intramural basketball league. All skill levels welcome! Teams of 5-7 players.',
+        category: 'Sports',
+        isHighlighted: false,
+      ),
+      _EventItem(
+        title: 'Campus Tour for Prospective Students',
+        date: DateFormat('MMM d, yyyy').format(march192025),
+        time: '11:30 AM - 1:00 PM',
+        location: 'Admissions Office, Main Building',
+        description:
+            'Join us for a guided tour of the campus for prospective students and their families. Learn about our facilities, programs, and student life.',
+        category: 'Academic',
+        isHighlighted: false,
+      ),
+      _EventItem(
+        title: 'Research Symposium Preparation',
+        date: DateFormat('MMM d, yyyy').format(march192025),
+        time: '1:30 PM - 3:00 PM',
+        location: 'Science Building, Room 305',
+        description:
+            'Workshop for students presenting at the upcoming research symposium. Get feedback on your presentation and tips for effective communication.',
+        category: 'Academic',
+        isHighlighted: false,
+      ),
+      _EventItem(
+        title: 'Student Government Meeting',
+        date: DateFormat('MMM d, yyyy').format(march192025),
+        time: '3:30 PM - 5:00 PM',
+        location: 'Student Union, Conference Room A',
+        description:
+            'Weekly meeting of the Student Government Association. Open to all students interested in campus governance and policy.',
+        category: 'Academic',
+        isHighlighted: false,
+      ),
+      _EventItem(
+        title: 'Meditation Workshop',
+        date: DateFormat('MMM d, yyyy').format(march192025),
+        time: '5:30 PM - 6:30 PM',
+        location: 'Wellness Center, Room 102',
+        description:
+            'Learn mindfulness techniques to reduce stress and improve focus. No prior experience necessary. Mats and cushions provided.',
+        category: 'Health & Wellness',
+        isHighlighted: false,
+      ),
+      _EventItem(
+        title: 'Film Screening: "The Graduate"',
+        date: DateFormat('MMM d, yyyy').format(march192025),
+        time: '7:00 PM - 9:30 PM',
+        location: 'Media Center, Auditorium',
+        description:
+            'Classic film screening followed by a discussion led by Professor Johnson from the Film Studies department. Refreshments provided.',
+        category: 'Arts & Culture',
+        isHighlighted: false,
+      ),
+      _EventItem(
+        title: 'Astronomy Night',
+        date: DateFormat('MMM d, yyyy').format(march192025),
+        time: '9:00 PM - 11:00 PM',
+        location: 'Observatory, Science Building Roof',
+        description:
+            'Join the Astronomy Club for stargazing and planet viewing through the university telescope. Hot chocolate and snacks provided.',
+        category: 'Academic',
+        isHighlighted: false,
       ),
     ]);
   }
@@ -742,6 +817,9 @@ class _EventsTabState extends State<EventsTab> {
                   },
                 ),
               ),
+
+              // Add extra padding at the bottom of the calendar to prevent overlap
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -837,9 +915,12 @@ class _EventsTabState extends State<EventsTab> {
 
     return Column(
       children: [
-        // Date header
+        // Date header with extra padding to prevent overlap with calendar
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          margin: const EdgeInsets.only(
+            top: 8.0,
+          ), // Extra margin to push down from calendar
           alignment: Alignment.centerLeft,
           child: Row(
             children: [
