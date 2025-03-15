@@ -10,24 +10,56 @@ class RegistrarTab extends StatefulWidget {
 
 class _RegistrarTabState extends State<RegistrarTab>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  final List<String> _categories = [
-    'Registration',
-    'Records',
-    'Graduation',
-    'Forms',
-    'Calendar',
+  // Store the selected service for detail view
+  String? _selectedService;
+
+  // Define services with their icons and colors
+  final List<ServiceItem> _services = [
+    ServiceItem(
+      title: 'Registration',
+      icon: Icons.event_available,
+      color: AppColors.primaryBlue,
+      description: 'Course registration, dates, and enrollment information',
+    ),
+    ServiceItem(
+      title: 'Records',
+      icon: Icons.description,
+      color: AppColors.info,
+      description: 'Transcripts, verification, and student information',
+    ),
+    ServiceItem(
+      title: 'Graduation',
+      icon: Icons.school,
+      color: AppColors.success,
+      description: 'Requirements, application, and convocation details',
+    ),
+    ServiceItem(
+      title: 'Forms',
+      icon: Icons.content_paste,
+      color: AppColors.warning,
+      description: 'Common forms and submission information',
+    ),
+    ServiceItem(
+      title: 'Calendar',
+      icon: Icons.calendar_today,
+      color: AppColors.secondaryRed,
+      description: 'Academic calendar and important dates',
+    ),
+    ServiceItem(
+      title: 'Contact Us',
+      icon: Icons.support_agent,
+      color: Colors.purple,
+      description: 'Get help with registrar-related inquiries',
+    ),
   ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _categories.length, vsync: this);
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -96,49 +128,301 @@ class _RegistrarTabState extends State<RegistrarTab>
             ),
           ),
 
-          // Tab Bar
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 2,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              labelColor: AppColors.primaryBlue,
-              unselectedLabelColor: Colors.grey[600],
-              indicatorColor: AppColors.primaryBlue,
-              tabs: _categories.map((category) => Tab(text: category)).toList(),
-            ),
-          ),
-
-          // Tab Content
+          // Main content area - replace TabBar with services grid or detail view
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildRegistrationTab(),
-                _buildRecordsTab(),
-                _buildGraduationTab(),
-                _buildFormsTab(),
-                _buildCalendarTab(),
-              ],
-            ),
+            child:
+                _selectedService == null
+                    ? _buildServicesGrid()
+                    : _buildServiceDetailView(_selectedService!),
           ),
         ],
       ),
     );
   }
 
+  // Build the grid of service boxes
+  Widget _buildServicesGrid() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Intro text
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Select a service to explore',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[800],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+
+        // Grid of services
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1.1,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: _services.length,
+              itemBuilder: (context, index) {
+                final service = _services[index];
+                return _buildServiceBox(service);
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Build individual service box
+  Widget _buildServiceBox(ServiceItem service) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedService = service.title;
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: service.color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(service.icon, color: service.color, size: 32),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              service.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                service.description,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build the detail view for a selected service
+  Widget _buildServiceDetailView(String serviceName) {
+    return Stack(
+      children: [
+        // Content area
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: _getServiceContent(serviceName),
+        ),
+
+        // Back button
+        Positioned(
+          top: 16,
+          left: 16,
+          child: FloatingActionButton.small(
+            backgroundColor: AppColors.primaryBlue,
+            child: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              setState(() {
+                _selectedService = null;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Return the appropriate content widget based on the selected service
+  Widget _getServiceContent(String serviceName) {
+    switch (serviceName) {
+      case 'Registration':
+        return _buildRegistrationTab();
+      case 'Records':
+        return _buildRecordsTab();
+      case 'Graduation':
+        return _buildGraduationTab();
+      case 'Forms':
+        return _buildFormsTab();
+      case 'Calendar':
+        return _buildCalendarTab();
+      case 'Contact Us':
+        return _buildContactTab();
+      default:
+        return const Center(child: Text('Service not found'));
+    }
+  }
+
+  // Add a new contact tab
+  Widget _buildContactTab() {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
+      children: [
+        const SectionTitle(title: 'Contact the Registrar\'s Office'),
+        const SizedBox(height: 20),
+
+        _buildContactCard(
+          icon: Icons.location_on,
+          title: 'Visit Us',
+          content: 'Student Services Building\n123 University Avenue\nRoom 301',
+        ),
+        const SizedBox(height: 16),
+        _buildContactCard(
+          icon: Icons.email,
+          title: 'Email Us',
+          content: 'registrar@university.edu\nResponse time: 1-2 business days',
+        ),
+        const SizedBox(height: 16),
+        _buildContactCard(
+          icon: Icons.phone,
+          title: 'Call Us',
+          content: '(555) 123-4567\nMonday to Friday: 9:00 AM - 4:00 PM',
+        ),
+        const SizedBox(height: 16),
+        _buildContactCard(
+          icon: Icons.chat,
+          title: 'Live Chat',
+          content: 'Available weekdays from 10:00 AM - 3:00 PM',
+          hasAction: true,
+          actionText: 'Start Chat',
+        ),
+
+        const SizedBox(height: 30),
+        const SectionTitle(title: 'Frequently Asked Questions'),
+        const SizedBox(height: 16),
+
+        ExpansionTile(
+          title: const Text('How do I request an official transcript?'),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'You can request an official transcript through ACORN or by submitting a Transcript Request Form to the Registrar\'s Office. Regular processing time is 3-5 business days.',
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+            ),
+          ],
+        ),
+        ExpansionTile(
+          title: const Text('What\'s the deadline to drop a course?'),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'The deadline to drop courses varies by term. For F courses, the deadline is usually in November, and for S courses, it\'s typically in March. Check the Academic Calendar for exact dates.',
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+            ),
+          ],
+        ),
+        ExpansionTile(
+          title: const Text('How do I declare my subject POSt?'),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'You can declare or change your subject POSt through ACORN during the program enrollment period, which typically runs from March to September.',
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContactCard({
+    required IconData icon,
+    required String title,
+    required String content,
+    bool hasAction = false,
+    String actionText = '',
+  }) {
+    return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: AppColors.primaryBlue, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            if (hasAction) ...[
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlue,
+                    foregroundColor: Colors.white,
+                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                  ),
+                  child: Text(actionText),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildRegistrationTab() {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
       children: [
         const SectionTitle(title: 'Course Registration'),
         const SizedBox(height: 12),
@@ -222,7 +506,7 @@ class _RegistrarTabState extends State<RegistrarTab>
 
   Widget _buildRecordsTab() {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
       children: [
         const SectionTitle(title: 'Academic Records & Transcripts'),
         const SizedBox(height: 12),
@@ -303,7 +587,7 @@ class _RegistrarTabState extends State<RegistrarTab>
 
   Widget _buildGraduationTab() {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
       children: [
         const SectionTitle(title: 'Graduation Requirements'),
         const SizedBox(height: 12),
@@ -399,7 +683,7 @@ class _RegistrarTabState extends State<RegistrarTab>
 
   Widget _buildFormsTab() {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
       children: [
         const SectionTitle(title: 'Common Forms & Requests'),
         const SizedBox(height: 16),
@@ -490,7 +774,7 @@ class _RegistrarTabState extends State<RegistrarTab>
 
   Widget _buildCalendarTab() {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
       children: [
         const SectionTitle(title: '2023-2024 Academic Calendar'),
         const SizedBox(height: 16),
@@ -1101,5 +1385,20 @@ class CalendarEvent {
     required this.date,
     required this.description,
     this.isImportant = false,
+  });
+}
+
+// Define a class for service items
+class ServiceItem {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final String description;
+
+  ServiceItem({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.description,
   });
 }
