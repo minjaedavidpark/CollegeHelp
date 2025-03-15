@@ -129,14 +129,23 @@ class _HomeScreenState extends State<HomeScreen>
             },
             child: const SizedBox.expand(),
           ),
-          leadingWidth: 90, // Increased to fit two buttons
+          leadingWidth: 100, // Increased to fit two buttons with proper spacing
           leading: Row(
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 10.0),
-                child: _buildSearchButton(),
+                child: _buildAppBarButton(
+                  icon: Icons.search,
+                  tooltip: 'Search',
+                  onPressed: () => _showSearchDialog(context),
+                ),
               ),
-              _buildHelpButton(),
+              const SizedBox(width: 6), // Same spacing as between right buttons
+              _buildAppBarButton(
+                icon: Icons.help_outline,
+                tooltip: 'Help',
+                onPressed: () => _showHelpDialog(context),
+              ),
             ],
           ),
           title: Row(
@@ -176,9 +185,9 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           centerTitle: true,
           actions: [
-            _buildNotificationButton(),
+            _buildNotificationButtonUniform(),
             const SizedBox(width: 6),
-            _buildProfileButton(),
+            _buildProfileButtonUniform(),
             const SizedBox(width: 10),
           ],
         ),
@@ -186,26 +195,38 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildNotificationButton() {
+  // Unified method to build all app bar buttons with consistent styling
+  Widget _buildAppBarButton({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      width: 40,
+      height: 40,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: Colors.white, size: 24),
+        onPressed: onPressed,
+        tooltip: tooltip,
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints(),
+      ),
+    );
+  }
+
+  // Modified notification button using the unified styling
+  Widget _buildNotificationButtonUniform() {
     return Stack(
       children: [
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconButton(
-            icon: const Icon(
-              Icons.notifications_outlined,
-              color: Colors.white,
-              size: 24,
-            ),
-            onPressed: () {
-              _showNotificationsPanel(context);
-            },
-            tooltip: 'Notifications',
-          ),
+        _buildAppBarButton(
+          icon: Icons.notifications_outlined,
+          tooltip: 'Notifications',
+          onPressed: () => _showNotificationsPanel(context),
         ),
         // Only show badge if there are unread notifications
         if (_unreadNotificationsCount > 0)
@@ -233,6 +254,15 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
       ],
+    );
+  }
+
+  // Modified profile button using the unified styling
+  Widget _buildProfileButtonUniform() {
+    return _buildAppBarButton(
+      icon: Icons.account_circle_outlined,
+      tooltip: 'Profile',
+      onPressed: () => _showProfileMenu(context),
     );
   }
 
@@ -518,30 +548,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildProfileButton() {
-    return Container(
-      width: 40,
-      height: 40,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          _showProfileMenu(context);
-        },
-        child: const Icon(
-          Icons.account_circle_outlined,
-          color: Colors.white,
-          size: 24,
-        ),
-      ),
-    );
-  }
-
   void _showProfileMenu(BuildContext context) {
     // Calculate position relative to the profile button
     final RenderBox overlay =
@@ -805,50 +811,6 @@ class _HomeScreenState extends State<HomeScreen>
           });
           _pageController.jumpToPage(index);
         },
-      ),
-    );
-  }
-
-  // New search button that matches the style of other buttons
-  Widget _buildSearchButton() {
-    return Container(
-      width: 40,
-      height: 40,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.search, color: Colors.white, size: 24),
-        onPressed: () {
-          // Show search dialog
-          _showSearchDialog(context);
-        },
-        tooltip: 'Search',
-        padding: EdgeInsets.zero,
-      ),
-    );
-  }
-
-  // New help button that matches the style of other buttons
-  Widget _buildHelpButton() {
-    return Container(
-      width: 40,
-      height: 40,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.help_outline, color: Colors.white, size: 24),
-        onPressed: () {
-          // Show help options
-          _showHelpDialog(context);
-        },
-        tooltip: 'Help',
-        padding: EdgeInsets.zero,
       ),
     );
   }
