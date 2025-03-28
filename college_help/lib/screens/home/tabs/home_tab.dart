@@ -8,7 +8,10 @@ import '../components/resource_card.dart';
 import '../components/event_card.dart';
 
 class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
+  final bool isGuest;
+  final Function(String) onViewAll;
+
+  const HomeTab({super.key, this.isGuest = false, required this.onViewAll});
 
   @override
   Widget build(BuildContext context) {
