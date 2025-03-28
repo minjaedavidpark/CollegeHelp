@@ -2,7 +2,7 @@
 
 ## Overview
 
-Regression testing ensures that new code changes do not adversely affect existing functionality in the CollegeHelp platform. This is particularly important for an educational application where students rely on consistent functionality for their learning activities. This document outlines our approach to regression testing to maintain high quality and reliability.
+Regression testing ensures that new code changes do not adversely affect existing functionality in the CollegeHelp platform. This is particularly important for a student resource application where users rely on consistent functionality for accessing campus information and services. This document outlines our approach to regression testing to maintain high quality and reliability.
 
 ## Regression Testing Principles
 
@@ -52,21 +52,21 @@ Our regression test suite is organized into several tiers based on importance an
 | Account Management | User can update profile, change password, manage notification settings | High |
 | Permission Verification | Different user roles have appropriate access to features | Critical |
 
-### Course Management
+### Campus Information
 
 | Test Area | Test Cases | Priority |
 |-----------|------------|----------|
-| Course Creation | Instructors can create courses with all required elements | Critical |
-| Content Management | Course content can be added, edited, and removed | High |
-| Enrollment | Students can enroll in courses, view enrolled courses | Critical |
+| Campus Map | Map loads correctly, shows user location, displays buildings and points of interest | Critical |
+| Building Information | Building details are accurate, opening hours are correct | High |
+| Event Calendar | Events are displayed correctly, filtering and search work as expected | Critical |
 
-### Assessment System
+### Resource Access
 
 | Test Area | Test Cases | Priority |
 |-----------|------------|----------|
-| Quiz Creation | Instructors can create quizzes with various question types | Critical |
-| Quiz Taking | Students can take quizzes, submit answers, see results | Critical |
-| Grade Calculation | Grades are calculated correctly based on assessment results | Critical |
+| Library Access | Library hours and availability are accurate | Critical |
+| Study Spaces | Study space information and availability are correct | High |
+| Campus Services | Service locations and operating hours are accurate | Critical |
 
 ## Regression Testing Approach
 
@@ -85,49 +85,37 @@ flowchart LR
 ## Test Implementation Example
 
 ```dart
-// Example of Flutter widget test for login functionality regression
-testWidgets('Login regression test', (WidgetTester tester) async {
-  // Build the login screen widget
+// Example of Flutter widget test for campus map functionality regression
+testWidgets('Campus map regression test', (WidgetTester tester) async {
+  // Build the campus map screen widget
   await tester.pumpWidget(MaterialApp(
-    home: LoginScreen(),
+    home: CampusMapScreen(),
   ));
 
   // Verify initial state
-  expect(find.text('Login'), findsOneWidget);
-  expect(find.byKey(Key('loginButton')), findsOneWidget);
-  expect(find.byKey(Key('forgotPasswordButton')), findsOneWidget);
+  expect(find.text('Campus Map'), findsOneWidget);
+  expect(find.byKey(Key('mapView')), findsOneWidget);
+  expect(find.byKey(Key('locationButton')), findsOneWidget);
   
-  // Test with empty fields - should show validation errors
-  await tester.tap(find.byKey(Key('loginButton')));
+  // Test map controls
+  await tester.tap(find.byKey(Key('zoomInButton')));
   await tester.pumpAndSettle();
-  expect(find.text('Email is required'), findsOneWidget);
-  expect(find.text('Password is required'), findsOneWidget);
+  expect(find.byKey(Key('mapView')), findsOneWidget);
   
-  // Enter valid email but invalid password
-  await tester.enterText(find.byKey(Key('emailField')), 'test@example.com');
-  await tester.enterText(find.byKey(Key('passwordField')), 'wrong');
-  await tester.tap(find.byKey(Key('loginButton')));
+  // Test building selection
+  await tester.tap(find.byKey(Key('buildingMarker')));
   await tester.pumpAndSettle();
-  expect(find.text('Invalid credentials'), findsOneWidget);
+  expect(find.text('Building Details'), findsOneWidget);
   
-  // Enter valid credentials
-  await tester.enterText(find.byKey(Key('emailField')), 'test@example.com');
-  await tester.enterText(find.byKey(Key('passwordField')), 'password123');
-  await tester.tap(find.byKey(Key('loginButton')));
+  // Test search functionality
+  await tester.enterText(find.byKey(Key('searchField')), 'Library');
   await tester.pumpAndSettle();
+  expect(find.text('Robarts Library'), findsOneWidget);
   
-  // Verify successful login - should navigate to dashboard
-  expect(find.text('Dashboard'), findsOneWidget);
-  expect(find.text('Welcome back'), findsOneWidget);
-  
-  // Test logout functionality
-  await tester.tap(find.byKey(Key('userMenuButton')));
+  // Test navigation
+  await tester.tap(find.text('Get Directions'));
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Logout'));
-  await tester.pumpAndSettle();
-  
-  // Verify we're back at login screen
-  expect(find.text('Login'), findsOneWidget);
+  expect(find.text('Navigation'), findsOneWidget);
 });
 ```
 
@@ -151,7 +139,8 @@ flowchart TD
 | Feature Area | Risk Level | Selection Strategy |
 |--------------|------------|-------------------|
 | Authentication | High | Run all tests on every change |
-| Course Content | Medium | Run tests when content or rendering components change |
+| Campus Map | High | Run tests when map or location services change |
+| Resource Information | Medium | Run tests when content or display components change |
 | User Interface | Medium | Run visual regression tests on UI changes |
 | Analytics | Low | Run weekly or before releases |
 
