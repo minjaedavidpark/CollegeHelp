@@ -132,6 +132,18 @@ void main() {
 }
 ```
 
+## Further Examples
+
+- **Testing Scrolling (`DiningTab`):** The `test/screens/home/tabs/dining_tab_test.dart` file demonstrates how to test widgets within a `ListView`. Key techniques include:
+    - Using `tester.scrollUntilVisible()` to bring specific widgets into view before asserting their presence.
+    - Using `skipOffstage: false` with finders if you need to locate widgets that might exist in the list but aren't currently rendered on screen (though scrolling is often more reliable).
+    - Potentially increasing the test screen size (`tester.view.physicalSize`) if initial layout fails, although `scrollUntilVisible` is generally preferred.
+
+- **Testing AppBars and Drawers (`EnhancedAppBar`):** The `test/screens/home/components/app_bar/enhanced_app_bar_test.dart` shows:
+    - Setting up and providing mock `AnimationController` instances (importantly, *not* starting repeating animations via `.repeat()` in `setUpAll` if the animation itself isn't being tested, and stopping the controller in `tearDown`).
+    - Testing interactions that trigger drawer opening (`Scaffold.openEndDrawer()`) by using a `GlobalKey<ScaffoldState>` and verifying the drawer content appears after interaction and pumping.
+    - Verifying custom badge content (finding the `Text` directly if a standard `Badge` widget isn't used).
+
 ## Running Tests
 
 Run all tests from the `college_help` project root directory:
