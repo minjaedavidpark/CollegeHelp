@@ -37,7 +37,7 @@ class DiningTab extends StatelessWidget {
           name: 'Wilson Hall Dining Commons',
           description:
               'The main dining hall at New College, offering a diverse range of culinary options for students and faculty.',
-          imageUrl: 'assets/images/dining_hall.jpg',
+          imageUrl: 'assets/images/placeholder.jpg',
           onTap: () {},
         ),
         const SizedBox(height: 24),
