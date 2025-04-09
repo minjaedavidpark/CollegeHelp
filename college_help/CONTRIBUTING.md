@@ -141,11 +141,38 @@ By participating in this project, you agree to abide by our Code of Conduct:
 
 ## 🧪 Testing Guidelines
 
-We aim for good test coverage to ensure app stability and maintainability. Please follow these guidelines when adding or modifying tests.
+We aim for good test coverage to ensure app stability and maintainability. Please follow these guidelines when adding or modifying tests. The primary type of test used in this project currently is **widget testing**.
 
 ### Test Directory Structure
 
-Tests should reside in the `college_help/test/` directory. The structure within `test/` should mirror the structure of the `college_help/lib/` directory.
+Tests should reside in the `college_help/test/` directory. The structure within `test/` should **mirror** the structure of the `college_help/lib/` directory to make tests easy to locate.
+
+```mermaid
+graph TD
+    A[college_help] --> B(lib);
+    A --> C(test);
+    B --> B1(screens);
+    B1 --> B1a(auth);
+    B1a --> B1a1(login_screen.dart);
+    B1a --> B1a2(signup_screen.dart);
+    B1 --> B1b(home);
+    B1b --> B1b1(home_screen.dart);
+    B --> B2(widgets);
+    B2 --> B2a(custom_button.dart);
+
+    C --> C1(screens);
+    C1 --> C1a(auth);
+    C1a --> C1a1(login_screen_test.dart);
+    C1a --> C1a2(signup_screen_test.dart);
+    C1 --> C1b(home);
+    C1b --> C1b1(home_screen_test.dart);
+    C --> C2(widgets);
+    C2 --> C2a(custom_button_test.dart);
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px;
+    style B fill:#ccf,stroke:#333,stroke-width:2px;
+    style C fill:#ccf,stroke:#333,stroke-width:2px;
+```
 
 Example:
 - Code for `lib/screens/auth/login_screen.dart` should have tests in `test/screens/auth/login_screen_test.dart`.
@@ -153,26 +180,66 @@ Example:
 
 ### Types of Tests
 
-We primarily use **Widget Tests** for testing UI components (screens, widgets). Unit tests can be used for non-UI logic (models, services if they existed).
+- **Widget Tests:** Used for testing individual Flutter widgets or screens. They allow you to build the widget tree in a test environment, interact with UI elements, and verify the UI state. *This is the main type of test used in this project.*
+- **Unit Tests:** Used for testing pure Dart logic (e.g., functions, classes) that doesn't involve the Flutter UI framework. Useful for models or service classes (if implemented).
+- **Integration Tests:** Used for testing the full app or significant parts running on a device or emulator. These are typically slower and used for end-to-end flows.
 
 ### Writing Widget Tests
 
-Widget tests verify that a widget's UI looks and behaves as expected.
+Widget tests verify that a widget's UI looks and behaves as expected. The general flow is:
 
-1.  **Setup**: Import necessary packages (`flutter_test`, `flutter`, your widget's file). Wrap your widget in `MaterialApp` (or `Scaffold` if appropriate) within `tester.pumpWidget()` to provide necessary context (like `Navigator`, `Theme`).
-2.  **Find**: Use `find` methods (e.g., `find.text()`, `find.byType()`, `find.byKey()`, `find.byIcon()`, `find.widgetWithText()`, `find.descendant()`) to locate widgets in the tree.
-3.  **Interact**: Use `tester` methods (e.g., `tester.tap()`, `tester.enterText()`, `tester.drag()`, `tester.ensureVisible()`) to simulate user interactions.
-4.  **Pump**: Use `tester.pump()` or `tester.pumpAndSettle()` after interactions to rebuild the widget tree and process animations/futures.
-    *   `pump()`: Advances the clock by one frame (or a specified duration). Use when you need fine-grained control or to avoid timeouts with infinite animations.
-    *   `pumpAndSettle()`: Repeatedly calls `pump()` until the frame settles (no more frames scheduled). Useful for waiting for animations or futures to complete, but can time out if animations don't finish (e.g., repeating animations).
-5.  **Assert**: Use `expect()` with `Matcher`s (e.g., `findsOneWidget`, `findsNothing`, `isTrue`, `isFalse`) to verify the state of the UI.
+```mermaid
+graph LR
+    A[Start] --> B{Setup};
+    B --> C{Find Widgets};
+    C --> D{Interact};
+    D --> E{Pump Frame(s)};
+    E --> F{Assert State};
+    F --> G[End];
+    
+    subgraph Test Cycle
+        direction LR
+        B --> C --> D --> E --> F
+    end
+
+    style B fill:#ccf,stroke:#333,stroke-width:2px
+    style C fill:#cdf,stroke:#333,stroke-width:2px
+    style D fill:#cdf,stroke:#333,stroke-width:2px
+    style E fill:#cfc,stroke:#333,stroke-width:2px
+    style F fill:#fcc,stroke:#333,stroke-width:2px
+```
+
+1.  **Setup**: Import necessary packages (`flutter_test`, `flutter`, your widget's file). Use `tester.pumpWidget()` to build your widget. Crucially, wrap screen-level widgets or widgets requiring navigation/theming in `MaterialApp` to provide the necessary context (like `Navigator`, `Theme`).
+    ```dart
+    await tester.pumpWidget(MaterialApp(home: MyScreen()));
+    ```
+2.  **Find**: Use `find` methods (e.g., `find.text()`, `find.byType()`, `find.byKey()`, `find.byIcon()`, `find.widgetWithText()`, `find.descendant()`) to locate specific widgets within the rendered tree.
+    ```dart
+    final buttonFinder = find.widgetWithText(ElevatedButton, 'Submit');
+    ```
+3.  **Interact**: Use `tester` methods (e.g., `tester.tap()`, `tester.enterText()`, `tester.drag()`, `tester.ensureVisible()`) to simulate user actions on the found widgets.
+    ```dart
+    await tester.tap(buttonFinder);
+    ```
+4.  **Pump**: After interactions that trigger state changes or animations, use `tester.pump()` or related methods to advance the test clock and allow the UI to rebuild or animations to progress.
+    *   `pump()`: Advances by one frame or a specified duration. Use this when `pumpAndSettle` might time out (e.g., due to repeating animations) or when you need precise frame control. You might need multiple `pump()` calls or a `pump()` with a specific `Duration`.
+    *   `pumpAndSettle()`: Repeatedly calls `pump()` until no more frames are scheduled. Ideal for waiting for finite animations or futures, but **avoid** if infinite animations are present, as it will time out.
+    ```dart
+    await tester.pump(); // Advance one frame
+    await tester.pump(const Duration(milliseconds: 500)); // Advance 500ms
+    await tester.pumpAndSettle(); // Wait for animations (if safe)
+    ```
+5.  **Assert**: Use `expect()` with `Matcher`s (e.g., `findsOneWidget`, `findsNothing`, `isTrue`, `isFalse`) to verify that the UI state matches expectations after the interaction and pumping.
+    ```dart
+    expect(find.text('Success!'), findsOneWidget);
+    ```
 
 ### Example Widget Test (Simplified)
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:college_help/screens/welcome_screen.dart';
+import 'package:college_help/screens/welcome_screen.dart'; // Import the widget
 
 void main() {
   testWidgets('WelcomeScreen shows title and login button', (WidgetTester tester) async {
@@ -183,15 +250,17 @@ void main() {
     final titleFinder = find.text('Welcome to New College');
     final loginButtonFinder = find.widgetWithText(ElevatedButton, 'Login');
 
-    // Assert: Verify widgets are present
+    // Assert: Verify widgets are present initially
     expect(titleFinder, findsOneWidget);
     expect(loginButtonFinder, findsOneWidget);
 
-    // Interact: Tap the login button (Example of interaction)
+    // --- Example Interaction ---
+    // Interact: Tap the login button
     // await tester.tap(loginButtonFinder);
-    // await tester.pumpAndSettle(); // or tester.pump();
+    // Pump: Allow navigation/animation to process
+    // await tester.pumpAndSettle(); // Or tester.pump(duration);
 
-    // Assert: Verify outcome of interaction (e.g., navigation)
+    // Assert: Verify outcome of interaction (e.g., navigation to LoginScreen)
     // expect(find.byType(LoginScreen), findsOneWidget);
   });
 }
@@ -213,10 +282,10 @@ flutter test test/screens/auth/login_screen_test.dart
 
 ### General Guidelines
 
-1.  **Write tests** for all new features or bug fixes.
-2.  Ensure tests cover common use cases, edge cases, and validation logic.
+1.  Write **widget tests** for all new UI features or bug fixes involving widgets.
+2.  Ensure tests cover common user interactions, edge cases, and validation logic within the UI.
 3.  Run tests locally **before** submitting a Pull Request to ensure they pass.
-4.  Test on multiple devices/platforms if possible, especially for UI-heavy features.
+4.  Test on multiple devices/platforms manually if possible, especially for UI-heavy features, as widget tests run in a restricted environment.
 
 ## 📝 Documentation Guidelines
 
