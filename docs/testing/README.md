@@ -24,6 +24,17 @@ graph TD
     F --> G[Deployment]
 ```
 
+## Types of Tests Implemented
+
+This project utilizes various testing layers as outlined in the pyramid. Currently, the primary focus is on:
+
+- **[Widget Tests](./widget_tests.md)**: Testing individual UI components and screens in isolation. See the [Widget Testing Guidelines](./widget_tests.md) for details.
+- **(Future)** Unit Tests: For pure Dart logic (planned).
+- **(Future)** Integration Tests: For testing interactions between different parts of the app (planned).
+- **(Future)** End-to-End Tests: For testing complete user flows (planned).
+
+Refer to the specific documentation files in this directory for details on each testing type as they are implemented.
+
 ## Key Testing Priorities
 
 1. **User Data Protection** - All authentication and student information components undergo rigorous security testing
