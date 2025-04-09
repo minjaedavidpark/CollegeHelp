@@ -141,14 +141,82 @@ By participating in this project, you agree to abide by our Code of Conduct:
 
 ## 🧪 Testing Guidelines
 
-1. **Write tests** for all new features or bug fixes
+We aim for good test coverage to ensure app stability and maintainability. Please follow these guidelines when adding or modifying tests.
 
-2. **Run tests locally** before submitting a PR
-   ```bash
-   flutter test
-   ```
+### Test Directory Structure
 
-3. **Test on multiple devices/platforms** if possible
+Tests should reside in the `college_help/test/` directory. The structure within `test/` should mirror the structure of the `college_help/lib/` directory.
+
+Example:
+- Code for `lib/screens/auth/login_screen.dart` should have tests in `test/screens/auth/login_screen_test.dart`.
+- Code for `lib/widgets/custom_button.dart` should have tests in `test/widgets/custom_button_test.dart`.
+
+### Types of Tests
+
+We primarily use **Widget Tests** for testing UI components (screens, widgets). Unit tests can be used for non-UI logic (models, services if they existed).
+
+### Writing Widget Tests
+
+Widget tests verify that a widget's UI looks and behaves as expected.
+
+1.  **Setup**: Import necessary packages (`flutter_test`, `flutter`, your widget's file). Wrap your widget in `MaterialApp` (or `Scaffold` if appropriate) within `tester.pumpWidget()` to provide necessary context (like `Navigator`, `Theme`).
+2.  **Find**: Use `find` methods (e.g., `find.text()`, `find.byType()`, `find.byKey()`, `find.byIcon()`, `find.widgetWithText()`, `find.descendant()`) to locate widgets in the tree.
+3.  **Interact**: Use `tester` methods (e.g., `tester.tap()`, `tester.enterText()`, `tester.drag()`, `tester.ensureVisible()`) to simulate user interactions.
+4.  **Pump**: Use `tester.pump()` or `tester.pumpAndSettle()` after interactions to rebuild the widget tree and process animations/futures.
+    *   `pump()`: Advances the clock by one frame (or a specified duration). Use when you need fine-grained control or to avoid timeouts with infinite animations.
+    *   `pumpAndSettle()`: Repeatedly calls `pump()` until the frame settles (no more frames scheduled). Useful for waiting for animations or futures to complete, but can time out if animations don't finish (e.g., repeating animations).
+5.  **Assert**: Use `expect()` with `Matcher`s (e.g., `findsOneWidget`, `findsNothing`, `isTrue`, `isFalse`) to verify the state of the UI.
+
+### Example Widget Test (Simplified)
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:college_help/screens/welcome_screen.dart';
+
+void main() {
+  testWidgets('WelcomeScreen shows title and login button', (WidgetTester tester) async {
+    // Setup: Pump the widget within MaterialApp
+    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen()));
+
+    // Find: Locate widgets
+    final titleFinder = find.text('Welcome to New College');
+    final loginButtonFinder = find.widgetWithText(ElevatedButton, 'Login');
+
+    // Assert: Verify widgets are present
+    expect(titleFinder, findsOneWidget);
+    expect(loginButtonFinder, findsOneWidget);
+
+    // Interact: Tap the login button (Example of interaction)
+    // await tester.tap(loginButtonFinder);
+    // await tester.pumpAndSettle(); // or tester.pump();
+
+    // Assert: Verify outcome of interaction (e.g., navigation)
+    // expect(find.byType(LoginScreen), findsOneWidget);
+  });
+}
+```
+
+### Running Tests
+
+Run all tests from the `college_help` directory:
+
+```bash
+flutter test
+```
+
+Run tests in a specific file:
+
+```bash
+flutter test test/screens/auth/login_screen_test.dart
+```
+
+### General Guidelines
+
+1.  **Write tests** for all new features or bug fixes.
+2.  Ensure tests cover common use cases, edge cases, and validation logic.
+3.  Run tests locally **before** submitting a Pull Request to ensure they pass.
+4.  Test on multiple devices/platforms if possible, especially for UI-heavy features.
 
 ## 📝 Documentation Guidelines
 
