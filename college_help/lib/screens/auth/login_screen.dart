@@ -1,3 +1,5 @@
+import 'package:college_help/services/auth_services.dart';
+import 'package:college_help/utils/utils.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../home/home_screen.dart';
@@ -11,10 +13,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  AuthServices auth = AuthServices();
+
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+
+  bool loading = false;
 
   @override
   void dispose() {
@@ -23,15 +29,36 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Implement actual login functionality
-      // For now, just navigate to a placeholder home screen
+  void _login(BuildContext context) {
+    setState(() => loading = true);
+
+    bool validate = _formKey.currentState?.validate() ?? false;
+    if (!validate) {
+      setState(() => loading = false);
+      return;
+    }
+
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    auth.signInUserApp(email: email, password: password).then((event) {
+      if (!context.mounted) return;
+
+      if (event != null) {
+        Utils.showMessageFloating(
+          context: context,
+          message: event['error'],
+          icon: event['imageError'],
+        );
+        setState(() => loading = false);
+        return;
+      }
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
-    }
+      setState(() => loading = false);
+    });
   }
 
   @override
@@ -115,15 +142,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       // Navigate to forgot password screen
                     },
-                    child: const Text('Forgot Password?'),
+                    child: const Text('Forgot Password? '),
                   ),
                 ),
                 const SizedBox(height: 24),
 
                 // Login button
                 ElevatedButton(
-                  onPressed: _login,
-                  child: const Text('Login', style: TextStyle(fontSize: 16)),
+                  onPressed: () {
+                    _login(context);
+                  },
+                  child:
+                      loading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : const Text('Login', style: TextStyle(fontSize: 16)),
                 ),
                 const SizedBox(height: 16),
 
