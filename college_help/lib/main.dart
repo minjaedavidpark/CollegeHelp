@@ -1,8 +1,15 @@
+import 'package:college_help/screens/auth/login_screen.dart';
+import 'package:college_help/screens/auth/signup_screen.dart';
+import 'package:college_help/services/auth_services.dart';
 import 'package:flutter/material.dart';
 import 'constants/app_theme.dart';
 import 'screens/home/home_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const NewCollegeApp());
 }
 
@@ -15,7 +22,7 @@ class NewCollegeApp extends StatelessWidget {
       title: 'New College UofT',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const WelcomeScreen(),
+      home: AuthServices.routeScreen(context),
     );
   }
 }
@@ -59,7 +66,9 @@ class WelcomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
+                      builder:
+                          (context) =>
+                              const LoginScreen(), // lib/screens/auth/login_screen.dart
                     ),
                   );
                 },
@@ -73,7 +82,9 @@ class WelcomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SignUpScreen(),
+                      builder:
+                          (context) =>
+                              const SignUpScreen(), // lib/screens/auth/signup_screen.dart
                     ),
                   );
                 },
@@ -115,14 +126,14 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class __LoginScreen extends StatefulWidget {
+  const __LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<__LoginScreen> createState() => __LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class __LoginScreenState extends State<__LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -251,7 +262,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SignUpScreen(),
+                            builder:
+                                (context) =>
+                                    const SignUpScreen(), // lib/screens/auth/signup_screen.dart
                           ),
                         );
                       },
@@ -268,14 +281,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class __SignUpScreen extends StatefulWidget {
+  const __SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<__SignUpScreen> createState() => __SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class __SignUpScreenState extends State<__SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -482,7 +495,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
+                            builder: (context) => const __LoginScreen(),
                           ),
                         );
                       },

@@ -35,6 +35,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   intl: ^0.19.0
+  firebase_core: ^3.13.0
+  flutter_launcher_icons: ^0.14.3
+  firebase_auth: ^5.5.2
+  cloud_firestore: ^5.6.6
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +51,25 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true 
+  image_path: "assets/images/icon_app.png"
+  min_sdk_android: 23
+  adaptive_icon_background: "#fcfcfc"
+  adaptive_icon_foreground: "assets/images/icon_app.png"
+  web:
+    generate: true
+    image_path: "assets/images/icon_app.png"
+    background_color: "#9000ff"
+    theme_color: "#9000ff"
+  windows:
+    generate: true
+    image_path: "assets/images/icon_app.png"
+    icon_size: 256 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/images/icon_app.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -61,7 +84,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

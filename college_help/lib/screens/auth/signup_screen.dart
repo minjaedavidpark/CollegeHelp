@@ -1,3 +1,5 @@
+import 'package:college_help/services/auth_services.dart';
+import 'package:college_help/utils/utils.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../home/home_screen.dart';
@@ -11,6 +13,8 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  AuthServices auth = AuthServices();
+
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -20,6 +24,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _acceptTerms = true;
+
+  bool loading = false;
 
   @override
   void dispose() {
@@ -31,25 +37,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _signUp() {
-    if (_formKey.currentState!.validate()) {
-      if (!_acceptTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please accept terms and conditions'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-        return;
-      }
+  void _signUp(BuildContext context) {
+    setState(() => loading = true);
 
-      // TODO: Implement actual signup functionality
-      // For now, just navigate to a placeholder home screen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+    bool validate = _formKey.currentState?.validate() ?? false;
+
+    if (!validate) {
+      setState(() => loading = false);
+      return;
     }
+
+    if (!_acceptTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please accept terms and conditions'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      setState(() => loading = false);
+      return;
+    }
+
+    String name = _fullNameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String studantId = _studentIdController.text;
+
+    auth
+        .signUpUserApp(
+          name: name,
+          email: email,
+          password: password,
+          studantId: studantId,
+        )
+        .then((event) {
+          if (!context.mounted) return;
+          if (event != null) {
+            Utils.showMessageFloating(
+              context: context,
+              message: event['error'],
+              icon: event['IconError'],
+            );
+            setState(() => loading = false);
+            return;
+          }
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+          setState(() => loading = false);
+        });
   }
 
   @override
@@ -218,8 +255,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 // Sign Up button
                 ElevatedButton(
-                  onPressed: _signUp,
-                  child: const Text('Sign Up', style: TextStyle(fontSize: 16)),
+                  onPressed: () {
+                    _signUp(context);
+                  },
+                  child:
+                      loading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                            'Sign Up',
+                            style: TextStyle(fontSize: 16),
+                          ),
                 ),
                 const SizedBox(height: 16),
 
